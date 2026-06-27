@@ -1,0 +1,36 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwnerOrMember(bookData) {
+      return isSignedIn() &&
+        (bookData.ownerId == request.auth.uid ||
+         request.auth.uid in bookData.memberIds);
+    }
+
+    match /householdBooks/{bookId} {
+      allow read: if isOwnerOrMember(resource.data);
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    match /categories/{categoryId} {
+      allow read, write: if isSignedIn() &&
+        isOwnerOrMember(get(/databases/$(database)/documents/householdBooks/$(resource.data.householdBookId)).data);
+      allow create: if isSignedIn() &&
+        isOwnerOrMember(get(/databases/$(database)/documents/householdBooks/$(request.resource.data.householdBookId)).data);
+    }
+
+    match /transactions/{transactionId} {
+      allow read, write: if isSignedIn() &&
+        isOwnerOrMember(get(/databases/$(database)/documents/householdBooks/$(resource.data.householdBookId)).data);
+      allow create: if isSignedIn() &&
+        isOwnerOrMember(get(/databases/$(database)/documents/householdBooks/$(request.resource.data.householdBookId)).data);
+    }
+  }
+}
