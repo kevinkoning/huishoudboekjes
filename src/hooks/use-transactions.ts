@@ -25,7 +25,7 @@ export function useTransactions(
     }
 
     setLoading(true);
-    const unsubscribe = subscribeToTransactions(
+    return subscribeToTransactions(
       householdBookId,
       month,
       (result) => {
@@ -38,8 +38,6 @@ export function useTransactions(
         setLoading(false);
       },
     );
-
-    return unsubscribe;
   }, [householdBookId, month]);
 
   const addTransaction = async (input: TransactionInput) => {

@@ -22,7 +22,7 @@ export function useCategories(householdBookId: string | null) {
     }
 
     setLoading(true);
-    const unsubscribe = subscribeToCategories(
+    return subscribeToCategories(
       householdBookId,
       (result) => {
         setCategories(result);
@@ -34,8 +34,6 @@ export function useCategories(householdBookId: string | null) {
         setLoading(false);
       },
     );
-
-    return unsubscribe;
   }, [householdBookId]);
 
   const addCategory = async (input: CategoryInput) => {

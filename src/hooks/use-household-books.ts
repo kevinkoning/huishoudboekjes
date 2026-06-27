@@ -22,7 +22,7 @@ export function useHouseholdBooks(ownerId: string | null, archived: boolean) {
     }
 
     setLoading(true);
-    const unsubscribe = subscribeToHouseholdBooks(
+    return subscribeToHouseholdBooks(
       ownerId,
       archived,
       (result) => {
@@ -35,8 +35,6 @@ export function useHouseholdBooks(ownerId: string | null, archived: boolean) {
         setLoading(false);
       },
     );
-
-    return unsubscribe;
   }, [ownerId, archived]);
 
   const addBook = async (input: HouseholdBookInput) => {
