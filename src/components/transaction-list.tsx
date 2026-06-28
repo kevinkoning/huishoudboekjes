@@ -63,7 +63,11 @@ export function TransactionList({
           <li key={transaction.id} className="book-item">
             <div className="book-item-info">
               <strong>
-                {formatAmount(transaction.amount, transaction.type)}{" "}
+                <span
+                  className={`amount-badge amount-${transaction.type}`}
+                >
+                  {formatAmount(transaction.amount, transaction.type)}
+                </span>{" "}
                 <span style={{ fontWeight: 400 }}>
                   {transaction.description}
                 </span>
