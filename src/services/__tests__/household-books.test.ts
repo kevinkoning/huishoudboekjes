@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  addParticipant,
   createHouseholdBook,
   setHouseholdBookArchived,
   subscribeToHouseholdBooks,
@@ -8,9 +9,10 @@ import {
 
 vi.mock("@/lib/firebase", () => ({ db: {} }));
 
-const { addDoc, collection, doc, onSnapshot, query, updateDoc, where } =
+const { addDoc, arrayUnion, collection, doc, onSnapshot, query, updateDoc, where } =
   vi.hoisted(() => ({
     addDoc: vi.fn(),
+    arrayUnion: vi.fn((value: string) => ({ __arrayUnion: value })),
     collection: vi.fn(),
     doc: vi.fn(),
     onSnapshot: vi.fn(),
@@ -21,6 +23,7 @@ const { addDoc, collection, doc, onSnapshot, query, updateDoc, where } =
 
 vi.mock("firebase/firestore", () => ({
   addDoc,
+  arrayUnion,
   collection,
   doc,
   onSnapshot,
@@ -35,7 +38,7 @@ describe("household-books service", () => {
   });
 
   describe("subscribeToHouseholdBooks", () => {
-    it("maps Firestore documents to HouseholdBook objects on every snapshot, filtered by owner and archived state", () => {
+    it("maps Firestore documents to HouseholdBook objects on every snapshot, filtered by member email and archived state", () => {
       let emitSnapshot: (snapshot: unknown) => void = () => {};
       const unsubscribe = vi.fn();
       onSnapshot.mockImplementation((_query, onNext) => {
@@ -46,13 +49,17 @@ describe("household-books service", () => {
       const onError = vi.fn();
 
       const result = subscribeToHouseholdBooks(
-        "user-1",
+        "Test@Example.com",
         false,
         onChange,
         onError,
       );
 
-      expect(where).toHaveBeenCalledWith("ownerId", "==", "user-1");
+      expect(where).toHaveBeenCalledWith(
+        "memberEmails",
+        "array-contains",
+        "test@example.com",
+      );
       expect(where).toHaveBeenCalledWith("archived", "==", false);
 
       emitSnapshot({
@@ -63,7 +70,7 @@ describe("household-books service", () => {
               name: "Vakantie",
               description: "Reisbudget",
               ownerId: "user-1",
-              memberIds: ["user-1"],
+              memberEmails: ["test@example.com"],
               archived: false,
               createdAt: "2026-01-01T00:00:00.000Z",
             }),
@@ -77,7 +84,7 @@ describe("household-books service", () => {
           name: "Vakantie",
           description: "Reisbudget",
           ownerId: "user-1",
-          memberIds: ["user-1"],
+          memberEmails: ["test@example.com"],
           archived: false,
           createdAt: "2026-01-01T00:00:00.000Z",
         },
@@ -93,7 +100,7 @@ describe("household-books service", () => {
       });
       const onChange = vi.fn();
 
-      subscribeToHouseholdBooks("user-1", false, onChange, vi.fn());
+      subscribeToHouseholdBooks("test@example.com", false, onChange, vi.fn());
       emitSnapshot({ docs: [] });
 
       expect(onChange).toHaveBeenCalledWith([]);
@@ -107,7 +114,7 @@ describe("household-books service", () => {
       });
       const onError = vi.fn();
 
-      subscribeToHouseholdBooks("user-1", false, vi.fn(), onError);
+      subscribeToHouseholdBooks("test@example.com", false, vi.fn(), onError);
       const error = new Error("permission-denied");
       emitError(error);
 
@@ -119,7 +126,7 @@ describe("household-books service", () => {
     it("creates the household book with the creator set as owner and member", async () => {
       addDoc.mockResolvedValue({ id: "book-2" });
 
-      const id = await createHouseholdBook("user-1", {
+      const id = await createHouseholdBook("user-1", "Test@Example.com", {
         name: "Boodschappen",
         description: "Maandelijkse boodschappen",
       });
@@ -130,7 +137,7 @@ describe("household-books service", () => {
         expect.objectContaining({
           name: "Boodschappen",
           ownerId: "user-1",
-          memberIds: ["user-1"],
+          memberEmails: ["test@example.com"],
           archived: false,
         }),
       );
@@ -138,7 +145,10 @@ describe("household-books service", () => {
 
     it("rejects an empty name without calling Firestore", async () => {
       await expect(
-        createHouseholdBook("user-1", { name: "  ", description: "" }),
+        createHouseholdBook("user-1", "test@example.com", {
+          name: "  ",
+          description: "",
+        }),
       ).rejects.toThrow("Name is required");
 
       expect(addDoc).not.toHaveBeenCalled();
@@ -172,6 +182,24 @@ describe("household-books service", () => {
       await setHouseholdBookArchived("book-1", true);
 
       expect(updateDoc).toHaveBeenCalledWith(undefined, { archived: true });
+    });
+  });
+
+  describe("addParticipant", () => {
+    it("adds the lowercased email to memberEmails", async () => {
+      await addParticipant("book-1", "New@Example.com");
+
+      expect(updateDoc).toHaveBeenCalledWith(undefined, {
+        memberEmails: { __arrayUnion: "new@example.com" },
+      });
+    });
+
+    it("rejects an empty email without calling Firestore", async () => {
+      await expect(addParticipant("book-1", "  ")).rejects.toThrow(
+        "Email is required",
+      );
+
+      expect(updateDoc).not.toHaveBeenCalled();
     });
   });
 });

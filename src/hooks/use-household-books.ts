@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
+  addParticipant,
   createHouseholdBook,
   setHouseholdBookArchived,
   subscribeToHouseholdBooks,
@@ -9,13 +10,18 @@ import {
 } from "@/services/household-books";
 import type { HouseholdBook, HouseholdBookInput } from "@/types/household-book";
 
-export function useHouseholdBooks(ownerId: string | null, archived: boolean) {
+interface User {
+  uid: string;
+  email: string;
+}
+
+export function useHouseholdBooks(user: User | null, archived: boolean) {
   const [books, setBooks] = useState<HouseholdBook[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!ownerId) {
+    if (!user) {
       setBooks([]);
       setLoading(false);
       return;
@@ -23,7 +29,7 @@ export function useHouseholdBooks(ownerId: string | null, archived: boolean) {
 
     setLoading(true);
     return subscribeToHouseholdBooks(
-      ownerId,
+      user.email,
       archived,
       (result) => {
         setBooks(result);
@@ -35,13 +41,13 @@ export function useHouseholdBooks(ownerId: string | null, archived: boolean) {
         setLoading(false);
       },
     );
-  }, [ownerId, archived]);
+  }, [user?.uid, user?.email, archived]);
 
   const addBook = async (input: HouseholdBookInput) => {
-    if (!ownerId) {
+    if (!user) {
       return;
     }
-    await createHouseholdBook(ownerId, input);
+    await createHouseholdBook(user.uid, user.email, input);
   };
 
   const editBook = async (id: string, input: HouseholdBookInput) => {
@@ -52,5 +58,17 @@ export function useHouseholdBooks(ownerId: string | null, archived: boolean) {
     await setHouseholdBookArchived(id, value);
   };
 
-  return { books, loading, error, addBook, editBook, archiveBook };
+  const inviteParticipant = async (id: string, email: string) => {
+    await addParticipant(id, email);
+  };
+
+  return {
+    books,
+    loading,
+    error,
+    addBook,
+    editBook,
+    archiveBook,
+    inviteParticipant,
+  };
 }

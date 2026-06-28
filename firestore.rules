@@ -10,12 +10,14 @@ service cloud.firestore {
     function isOwnerOrMember(bookData) {
       return isSignedIn() &&
         (bookData.ownerId == request.auth.uid ||
-         request.auth.uid in bookData.memberIds);
+         request.auth.token.email in bookData.memberEmails);
     }
 
     match /householdBooks/{bookId} {
       allow read: if isOwnerOrMember(resource.data);
-      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() &&
+        request.resource.data.ownerId == request.auth.uid &&
+        request.auth.token.email in request.resource.data.memberEmails;
       allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
     }
 

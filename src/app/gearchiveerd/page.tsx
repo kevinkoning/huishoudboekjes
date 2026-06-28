@@ -7,8 +7,9 @@ import { HouseholdBookList } from "@/components/household-book-list";
 
 export default function ArchivedHouseholdBooksPage() {
   const { user, loading: authLoading } = useAuth();
+  const member = user?.email ? { uid: user.uid, email: user.email } : null;
   const { books, loading, error, archiveBook } = useHouseholdBooks(
-    user?.uid ?? null,
+    member,
     true,
   );
 
@@ -38,6 +39,7 @@ export default function ArchivedHouseholdBooksPage() {
       {!loading && !error && (
         <HouseholdBookList
           books={books}
+          currentUserId={user.uid}
           onArchive={archiveBook}
           archivedView={true}
         />

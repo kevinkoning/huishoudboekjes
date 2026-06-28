@@ -4,14 +4,20 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 
 vi.mock("@/lib/firebase", () => ({ auth: {} }));
 
-const { onAuthStateChanged, signInWithEmailAndPassword, signOut } =
-  vi.hoisted(() => ({
-    onAuthStateChanged: vi.fn(),
-    signInWithEmailAndPassword: vi.fn(),
-    signOut: vi.fn(),
-  }));
+const {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} = vi.hoisted(() => ({
+  createUserWithEmailAndPassword: vi.fn(),
+  onAuthStateChanged: vi.fn(),
+  signInWithEmailAndPassword: vi.fn(),
+  signOut: vi.fn(),
+}));
 
 vi.mock("firebase/auth", () => ({
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
@@ -66,6 +72,25 @@ describe("useAuth", () => {
       {},
       "test@example.com",
       "secret",
+    );
+  });
+
+  it("calls Firebase createUserWithEmailAndPassword on signUp", async () => {
+    onAuthStateChanged.mockImplementation(() => vi.fn());
+    createUserWithEmailAndPassword.mockResolvedValue(undefined);
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider,
+    });
+
+    await act(async () => {
+      await result.current.signUp("new@example.com", "secret123");
+    });
+
+    expect(createUserWithEmailAndPassword).toHaveBeenCalledWith(
+      {},
+      "new@example.com",
+      "secret123",
     );
   });
 

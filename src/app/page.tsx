@@ -8,8 +8,9 @@ import { HouseholdBookList } from "@/components/household-book-list";
 
 export default function HomePage() {
   const { user, loading: authLoading, logout } = useAuth();
-  const { books, loading, error, addBook, editBook, archiveBook } =
-    useHouseholdBooks(user?.uid ?? null, false);
+  const member = user?.email ? { uid: user.uid, email: user.email } : null;
+  const { books, loading, error, addBook, editBook, archiveBook, inviteParticipant } =
+    useHouseholdBooks(member, false);
 
   if (authLoading) {
     return <p className="loading">Laden...</p>;
@@ -44,8 +45,10 @@ export default function HomePage() {
       {!loading && !error && (
         <HouseholdBookList
           books={books}
+          currentUserId={user.uid}
           onArchive={archiveBook}
           onEdit={editBook}
+          onInvite={inviteParticipant}
           archivedView={false}
         />
       )}

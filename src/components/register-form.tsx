@@ -3,8 +3,8 @@
 import { type FormEvent, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 
-export function LoginForm() {
-  const { login } = useAuth();
+export function RegisterForm() {
+  const { signUp } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -12,31 +12,31 @@ export function LoginForm() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      await login(email, password);
+      await signUp(email, password);
       setError(null);
     } catch {
-      setError("Inloggen mislukt");
+      setError("Registreren mislukt. Gebruik een geldig e-mailadres en een wachtwoord van minimaal 6 tekens.");
     }
   };
 
   return (
     <div className="page">
       <div className="card" style={{ maxWidth: 360, margin: "4rem auto 0" }}>
-        <h1 style={{ marginBottom: "1rem" }}>Inloggen</h1>
+        <h1 style={{ marginBottom: "1rem" }}>Registreren</h1>
         <form className="form" onSubmit={handleSubmit}>
           <div className="form-row">
-            <label htmlFor="email">E-mail</label>
+            <label htmlFor="register-email">E-mail</label>
             <input
-              id="email"
+              id="register-email"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
           </div>
           <div className="form-row">
-            <label htmlFor="password">Wachtwoord</label>
+            <label htmlFor="register-password">Wachtwoord</label>
             <input
-              id="password"
+              id="register-password"
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -44,7 +44,7 @@ export function LoginForm() {
           </div>
           <div className="form-actions">
             <button className="btn btn-primary" type="submit">
-              Inloggen
+              Account aanmaken
             </button>
           </div>
           {error && (
@@ -54,7 +54,7 @@ export function LoginForm() {
           )}
         </form>
         <p style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
-          Nog geen account? <a href="/registreren">Registreren</a>
+          Al een account? <a href="/">Inloggen</a>
         </p>
       </div>
     </div>
