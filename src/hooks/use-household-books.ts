@@ -19,17 +19,16 @@ export function useHouseholdBooks(user: User | null, archived: boolean) {
   const [books, setBooks] = useState<HouseholdBook[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const uid = user?.uid;
+  const email = user?.email;
 
   useEffect(() => {
-    if (!user) {
-      setBooks([]);
-      setLoading(false);
+    if (!uid || !email) {
       return;
     }
 
-    setLoading(true);
     return subscribeToHouseholdBooks(
-      user.email,
+      email,
       archived,
       (result) => {
         setBooks(result);
@@ -41,7 +40,7 @@ export function useHouseholdBooks(user: User | null, archived: boolean) {
         setLoading(false);
       },
     );
-  }, [user?.uid, user?.email, archived]);
+  }, [uid, email, archived]);
 
   const addBook = async (input: HouseholdBookInput) => {
     if (!user) {
@@ -63,9 +62,9 @@ export function useHouseholdBooks(user: User | null, archived: boolean) {
   };
 
   return {
-    books,
-    loading,
-    error,
+    books: user ? books : [],
+    loading: user ? loading : false,
+    error: user ? error : null,
     addBook,
     editBook,
     archiveBook,

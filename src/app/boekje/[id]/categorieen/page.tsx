@@ -1,6 +1,7 @@
 "use client";
 
 import { use } from "react";
+import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useCategories } from "@/hooks/use-categories";
 import { useTransactions } from "@/hooks/use-transactions";
@@ -42,7 +43,7 @@ export default function CategoriesPage({
       <div className="page-header">
         <h1>Categorieën</h1>
         <div className="nav-links">
-          <a href={`/boekje/${id}`}>Terug naar boekje</a>
+          <Link href={`/boekje/${id}`}>Terug naar boekje</Link>
         </div>
       </div>
 

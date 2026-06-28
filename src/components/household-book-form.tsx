@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useState } from "react";
 import type { HouseholdBookInput } from "@/types/household-book";
 
 interface HouseholdBookFormProps {
@@ -21,11 +21,6 @@ export function HouseholdBookForm({
     initialValue?.description ?? "",
   );
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setName(initialValue?.name ?? "");
-    setDescription(initialValue?.description ?? "");
-  }, [initialValue]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

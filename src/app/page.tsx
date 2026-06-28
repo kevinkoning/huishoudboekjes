@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useHouseholdBooks } from "@/hooks/use-household-books";
 import { LoginForm } from "@/components/login-form";
@@ -25,7 +26,7 @@ export default function HomePage() {
       <div className="page-header">
         <h1>Mijn huishoudboekjes</h1>
         <div className="nav-links">
-          <a href="/gearchiveerd">Gearchiveerd</a>
+          <Link href="/gearchiveerd">Gearchiveerd</Link>
           <button className="btn btn-secondary btn-sm" type="button" onClick={() => logout()}>
             Uitloggen
           </button>

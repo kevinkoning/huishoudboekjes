@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useState } from "react";
 import type { CategoryInput } from "@/types/category";
 
 interface CategoryFormProps {
@@ -22,12 +22,6 @@ export function CategoryForm({
   );
   const [endDate, setEndDate] = useState(initialValue?.endDate ?? "");
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setName(initialValue?.name ?? "");
-    setMaxBudget(initialValue ? String(initialValue.maxBudget) : "");
-    setEndDate(initialValue?.endDate ?? "");
-  }, [initialValue]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

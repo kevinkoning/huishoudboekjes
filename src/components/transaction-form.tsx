@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useState } from "react";
 import type { Category } from "@/types/category";
 import type { TransactionInput, TransactionType } from "@/types/transaction";
 
@@ -33,14 +33,6 @@ export function TransactionForm({
     initialValue?.description ?? "",
   );
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setType(initialValue?.type ?? "expense");
-    setAmount(initialValue ? String(initialValue.amount) : "");
-    setDate(initialValue?.date ?? today());
-    setCategoryId(initialValue?.categoryId ?? "");
-    setDescription(initialValue?.description ?? "");
-  }, [initialValue]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

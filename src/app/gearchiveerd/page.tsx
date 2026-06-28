@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useHouseholdBooks } from "@/hooks/use-household-books";
 import { LoginForm } from "@/components/login-form";
@@ -26,7 +27,7 @@ export default function ArchivedHouseholdBooksPage() {
       <div className="page-header">
         <h1>Gearchiveerde huishoudboekjes</h1>
         <div className="nav-links">
-          <a href="/">Terug naar overzicht</a>
+          <Link href="/">Terug naar overzicht</Link>
         </div>
       </div>
 

@@ -16,12 +16,9 @@ export function useCategories(householdBookId: string | null) {
 
   useEffect(() => {
     if (!householdBookId) {
-      setCategories([]);
-      setLoading(false);
       return;
     }
 
-    setLoading(true);
     return subscribeToCategories(
       householdBookId,
       (result) => {
@@ -52,9 +49,9 @@ export function useCategories(householdBookId: string | null) {
   };
 
   return {
-    categories,
-    loading,
-    error,
+    categories: householdBookId ? categories : [],
+    loading: householdBookId ? loading : false,
+    error: householdBookId ? error : null,
     addCategory,
     editCategory,
     removeCategory,
