@@ -269,6 +269,16 @@ a:hover {
   color: var(--danger);
 }
 
+/* Transaction amounts */
+
+.amount-badge.amount-income {
+  color: var(--success);
+}
+
+.amount-badge.amount-expense {
+  color: var(--danger);
+}
+
 /* Feedback */
 
 .alert {
