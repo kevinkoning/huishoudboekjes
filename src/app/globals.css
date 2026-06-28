@@ -257,15 +257,15 @@ a:hover {
   font-weight: 600;
 }
 
-.budget-ok {
+.budget-badge.budget-ok {
   color: var(--success);
 }
 
-.budget-near-limit {
+.budget-badge.budget-near-limit {
   color: var(--warning);
 }
 
-.budget-over-budget {
+.budget-badge.budget-over-budget {
   color: var(--danger);
 }
 
