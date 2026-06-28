@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useCategories } from "@/hooks/use-categories";
 import { useTransactions } from "@/hooks/use-transactions";
@@ -47,8 +48,8 @@ export default function HouseholdBookDetailPage({
       <div className="page-header">
         <h1>Uitgaven en inkomsten</h1>
         <div className="nav-links">
-          <a href={`/boekje/${id}/categorieen`}>Categorieën</a>
-          <a href="/">Terug naar overzicht</a>
+          <Link href={`/boekje/${id}/categorieen`}>Categorieën</Link>
+          <Link href="/">Terug naar overzicht</Link>
         </div>
       </div>
 

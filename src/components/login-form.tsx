@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 
 export function LoginForm() {
@@ -54,7 +55,7 @@ export function LoginForm() {
           )}
         </form>
         <p style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
-          Nog geen account? <a href="/registreren">Registreren</a>
+          Nog geen account? <Link href="/registreren">Registreren</Link>
         </p>
       </div>
     </div>

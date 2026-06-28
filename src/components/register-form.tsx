@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 
 export function RegisterForm() {
@@ -54,7 +55,7 @@ export function RegisterForm() {
           )}
         </form>
         <p style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
-          Al een account? <a href="/">Inloggen</a>
+          Al een account? <Link href="/">Inloggen</Link>
         </p>
       </div>
     </div>

@@ -19,12 +19,9 @@ export function useTransactions(
 
   useEffect(() => {
     if (!householdBookId) {
-      setTransactions([]);
-      setLoading(false);
       return;
     }
 
-    setLoading(true);
     return subscribeToTransactions(
       householdBookId,
       month,
@@ -56,9 +53,9 @@ export function useTransactions(
   };
 
   return {
-    transactions,
-    loading,
-    error,
+    transactions: householdBookId ? transactions : [],
+    loading: householdBookId ? loading : false,
+    error: householdBookId ? error : null,
     addTransaction,
     editTransaction,
     removeTransaction,
