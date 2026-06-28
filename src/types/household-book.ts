@@ -3,7 +3,7 @@ export interface HouseholdBook {
   name: string;
   description: string;
   ownerId: string;
-  memberIds: string[];
+  memberEmails: string[];
   archived: boolean;
   createdAt: string;
 }

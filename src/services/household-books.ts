@@ -1,5 +1,6 @@
 import {
   addDoc,
+  arrayUnion,
   collection,
   doc,
   onSnapshot,
@@ -14,7 +15,7 @@ import type { HouseholdBook, HouseholdBookInput } from "@/types/household-book";
 const COLLECTION = "householdBooks";
 
 export function subscribeToHouseholdBooks(
-  ownerId: string,
+  memberEmail: string,
   archived: boolean,
   onChange: (books: HouseholdBook[]) => void,
   onError: (error: Error) => void,
@@ -22,7 +23,7 @@ export function subscribeToHouseholdBooks(
   return onSnapshot(
     query(
       collection(db, COLLECTION),
-      where("ownerId", "==", ownerId),
+      where("memberEmails", "array-contains", memberEmail.toLowerCase()),
       where("archived", "==", archived),
     ),
     (snapshot) => {
@@ -39,6 +40,7 @@ export function subscribeToHouseholdBooks(
 
 export async function createHouseholdBook(
   ownerId: string,
+  ownerEmail: string,
   input: HouseholdBookInput,
 ): Promise<string> {
   if (!input.name.trim()) {
@@ -49,7 +51,7 @@ export async function createHouseholdBook(
     name: input.name,
     description: input.description,
     ownerId,
-    memberIds: [ownerId],
+    memberEmails: [ownerEmail.toLowerCase()],
     archived: false,
     createdAt: new Date().toISOString(),
   });
@@ -76,4 +78,17 @@ export async function setHouseholdBookArchived(
   archived: boolean,
 ): Promise<void> {
   await updateDoc(doc(db, COLLECTION, id), { archived });
+}
+
+export async function addParticipant(
+  id: string,
+  email: string,
+): Promise<void> {
+  if (!email.trim()) {
+    throw new Error("Email is required");
+  }
+
+  await updateDoc(doc(db, COLLECTION, id), {
+    memberEmails: arrayUnion(email.toLowerCase()),
+  });
 }
